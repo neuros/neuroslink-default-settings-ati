@@ -1,0 +1,22 @@
+#! /bin/sh
+
+set -e
+
+#DEBHELPER#
+
+case "$1" in
+  configure)
+	update-alternatives --install /etc/gdm/gdm-cdd.conf gdm-config-derivative /etc/xdg/neuroslink/gdm/gdm.conf 55
+# Moved to ati config package neurostvpc-default-settings-ati
+	aticonfig --initial -f --overlay-type=Xv
+
+	if [ -e /etc/plse/default.pa ]; then
+		cp /etc/pulse/default.pa /etc/pulse/default.pa.orig
+		cp /etc/pulse/default.pa.neurostvpc /etc/pulse/default.pa
+	else
+		echo "Pulse audio config not found so not installing"
+	fi
+	echo "ln -s /dev/snd/pcmC1D3p /dev/snd/pcmC1D0p" > /etc/rc.local
+	echo "amixer -c1 sset 'IEC958' unmute" >> /etc/rc.local
+    ;;
+esac
